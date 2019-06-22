@@ -1,6 +1,7 @@
 <html>
 <head>
 	<title>App per turisti di Mannheim in visita a Rovereto</title>
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
 	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
@@ -8,15 +9,18 @@
 </head>
 
 <body>
-	<div id="app">
+	<md-app id="app">
 		<md-app-toolbar class="md-primary">
 			<span class="md-title">Rovereto Path Finder</span>
 		</md-app-toolbar>
+		<md-app-drawer md-permanent="full">
+			Questo è un menu
+		</md-app-drawer>
 		<md-app-content>
 		Ciao
 		</md-app-content>
 		
-	</div>
+	</md-app>
 	
 	<script src="https://unpkg.com/vue"></script>
 	<script src="https://unpkg.com/vue-material@beta"></script>
