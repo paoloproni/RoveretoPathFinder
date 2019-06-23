@@ -10,14 +10,48 @@
 
 <body>
 	<md-app id="app">
+
 		<md-app-toolbar class="md-primary">
-			<span class="md-title">Rovereto Path Finder</span>
+			<span class="md-title">Scelta dell'itinerario</span>
 		</md-app-toolbar>
-		<md-app-drawer md-permanent="full">
-			Questo è un menu
+		<!-- Con una risoluzione da cellulare, il cassetto laterale sparisce perché md-permanent -->
+		<md-app-drawer md-permanent="full">			
+			<md-toolbar class="md-transparent" md-elevation="0">
+				<div class="md-toolbar-row">
+					<!-- il titolo è più grande -->
+					<span class="md-title">Rovereto Path Finder</span>
+				</div>
+          		<div class="md-toolbar-row">
+					Visitare Rovereto da Mannheim
+				</div>
+        	</md-toolbar>
+
+			<md-list>
+				<md-list-item>
+					<md-icon>directions_car</md-icon>
+					<span class="md-list-item-text">Auto</span>
+				</md-list-item>
+				<md-list-item>	
+					<md-icon>flight</md-icon>
+					<span class="md-list-item-text">Aereo</span>
+				</md-list-item>
+				<md-list-item>	
+					<md-icon>directions_train</md-icon>
+					<span class="md-list-item-text">Treno</span>
+				</md-list-item>
+				<md-divider class="md-inset"></md-divider>
+				<md-list-item>
+					<md-icon> </md-icon>
+					<span class="md-list-item-text">Cambio Lingua</span>					
+				</md-list-item>
+				<md-list-item>
+					<md-icon> </md-icon>
+					<span class="md-list-item-text">Aiuto e Feedback</span>					
+				</md-list-item>
+			</md-list>
 		</md-app-drawer>
 		<md-app-content>
-		Ciao
+		Qui ci va la griglia con i percorsi
 		</md-app-content>
 		
 	</md-app>
