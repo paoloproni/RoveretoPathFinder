@@ -6,6 +6,14 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
 	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
 	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-material@beta"></script>
+    <script src="https://unpkg.com/vue-router"></script>
+	<style>
+		#app {
+			height: 100vh;
+		}
+	</style>
 </head>
 
 <body>
@@ -59,6 +67,29 @@
 	<script src="https://unpkg.com/vue-material@beta"></script>
 	<script>
 		Vue.use(VueMaterial.default);
+       	Vue.component('router-link', Vue.options.components.RouterLink);
+        Vue.component('router-view', Vue.options.components.RouterView);
+
+		// La home è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
+		const home = Vue.component('home', {template: '#home'});  // metti la sezione data
+		const aereo = Vue.component('aereo', {template: '#aereo'});
+		const treno = Vue.component('treno', {template: '#treno'});
+		const auto = Vue.component('auto', {template: '#auto'});
+		const interestPoints = Vue.component('interestPoints', {template: '#interestPoints'});
+		
+//		const mappa = Vue.component('mappa', {template: '#mappa'});
+		
+		const router = new VueRouter({
+			routes: [
+				{path:'/home', component: home},
+				{path:'/aereo', component: aereo},
+				{path:'/treno', component: treno},
+				{path:'/auto', component: auto},
+				{path:'/interestPoints', component: auto},
+				{path:'*', component: home}
+			]			
+		});
+
 		new Vue({el:'#app'});
 	</script>
 </body>
