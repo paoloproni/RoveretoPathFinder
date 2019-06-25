@@ -3,11 +3,16 @@
 	<title>App per turisti di Mannheim in visita a Rovereto</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
+	<!-- FONT PER MATERIAL CON ICONE -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+	<!-- CSS DI MATERIAL CON TEMA DEFAULT -->
 	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
 	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+	<!-- VUE FRAMEWORK -->
     <script src="https://unpkg.com/vue"></script>
+    <!-- VUE MATERIAL -->
     <script src="https://unpkg.com/vue-material@beta"></script>
+    <!-- VUE ROUTER -->
     <script src="https://unpkg.com/vue-router"></script>
 	<style>
 		#app {
@@ -57,40 +62,84 @@
 			</md-list>
 		</md-app-drawer>
 		
+		
 		<md-app-content>
-		Qui ci va la griglia con i percorsi
-		</md-app-content>
-
-	</md-app>
+        	<router-view></router-view> 
+      	</md-app-content>
+	</md-app>	
 	
-	<script src="https://unpkg.com/vue"></script>
-	<script src="https://unpkg.com/vue-material@beta"></script>
+
+	
 	<script>
+		// Inizializzazione di Vue material con le funzionalità di router
 		Vue.use(VueMaterial.default);
-       	Vue.component('router-link', Vue.options.components.RouterLink);
-        Vue.component('router-view', Vue.options.components.RouterView);
+		Vue.use(VueRouter);
 
 		// La home è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
-		const home = Vue.component('home', {template: '#home'});  // metti la sezione data
+		const home = Vue.component('home', {
+			template: '#home',
+			// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
+			created: function() {
+				// Leggi i dati da Firestore
+				console.log("created di home eseguito");
+			},
+			data: function() {
+				return {					
+					percorsi: [] // Inizializza l'array dei percorsi 
+				}
+			},
+			methods: {
+				scriviVoto: function() {
+					console.log("Invia i dati sul voto");
+				}
+			}
+			
+		}); 
+
 		const aereo = Vue.component('aereo', {template: '#aereo'});
 		const treno = Vue.component('treno', {template: '#treno'});
 		const auto = Vue.component('auto', {template: '#auto'});
 		const interestPoints = Vue.component('interestPoints', {template: '#interestPoints'});
 		
 //		const mappa = Vue.component('mappa', {template: '#mappa'});
-		
+	
 		const router = new VueRouter({
 			routes: [
 				{path:'/home', component: home},
+				// Metti un percorso su un singolo percorso, tipo {path: '/user/:id', component: User}, 
 				{path:'/aereo', component: aereo},
 				{path:'/treno', component: treno},
 				{path:'/auto', component: auto},
 				{path:'/interestPoints', component: auto},
 				{path:'*', component: home}
 			]			
+		})
+		
+		window.addEventListener("load", function(event) {
+			new Vue({
+				router: router,
+				el:'#app',
+				data: {
+					
+				}
+			})
 		});
-
-		new Vue({el:'#app'});
 	</script>
-</body>
+ 
+	<template id="home">
+		<div>
+			<div v-if="percorsi && percorsi.length > 0">
+				<md-app-content>
+					Qui ci va la griglia con i percorsi
+				</md-app-content>
+			</div>
+			<md-empty-state md-rounded md-label="Nessun percorso presente" 
+							md-description="Controlla se il server con i percorsi di Rovereto risponde"
+							v-if="!percorsi || percorsi.length == 0">
+				
+			</md-empty-state>
+		</div>
+	</template>
+
+	</body>
 </html>
