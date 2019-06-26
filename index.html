@@ -1,145 +1,193 @@
 <html>
-<head>
-	<title>App per turisti di Mannheim in visita a Rovereto</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	<!-- FONT PER MATERIAL CON ICONE -->
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
-	<!-- CSS DI MATERIAL CON TEMA DEFAULT -->
-	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
-	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
-	<!-- VUE FRAMEWORK -->
-    <script src="https://unpkg.com/vue"></script>
-    <!-- VUE MATERIAL -->
-    <script src="https://unpkg.com/vue-material@beta"></script>
-    <!-- VUE ROUTER -->
-    <script src="https://unpkg.com/vue-router"></script>
-	<style>
-		#app {
-			height: 100vh;
-		}
-	</style>
-</head>
-
-<body>
-	<md-app id="app">
-		<md-app-toolbar class="md-primary">
-			<span class="md-title">Scelta dell'itinerario</span>
-		</md-app-toolbar>
-		<!-- Con una risoluzione da cellulare, il cassetto laterale sparisce perché md-permanent -->
-		<md-app-drawer md-permanent="full">			
-			<md-toolbar class="md-transparent" md-elevation="0">
-				<div class="md-toolbar-row">
-					<!-- il titolo è più grande -->
-					<span class="md-title">Rovereto Path Finder</span>
-				</div>
-          		<div class="md-toolbar-row">
-					Visitare Rovereto da Mannheim
-				</div>
-        	</md-toolbar>
-			<md-list>
-				<md-list-item>
-					<md-icon>directions_car</md-icon>
-					<span class="md-list-item-text">Auto</span>
-				</md-list-item>
-				<md-list-item>	
-					<md-icon>flight</md-icon>
-					<span class="md-list-item-text">Aereo</span>
-				</md-list-item>
-				<md-list-item>	
-					<md-icon>directions_train</md-icon>
-					<span class="md-list-item-text">Treno</span>
-				</md-list-item>
-				<md-divider class="md-inset"></md-divider>
-				<md-list-item>
-					<md-icon> </md-icon>
-					<span class="md-list-item-text">Cambio Lingua</span>					
-				</md-list-item>
-				<md-list-item>
-					<md-icon> </md-icon>
-					<span class="md-list-item-text">Aiuto e Feedback</span>					
-				</md-list-item>
-			</md-list>
-		</md-app-drawer>
-		
-		
-		<md-app-content>
-        	<router-view></router-view> 
-      	</md-app-content>
-	</md-app>	
-	
-
-	
-	<script>
-		// Inizializzazione di Vue material con le funzionalità di router
-		Vue.use(VueMaterial.default);
-		Vue.use(VueRouter);
-
-		// La home è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
-		const home = Vue.component('home', {
-			template: '#home',
-			// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
-			created: function() {
-				// Leggi i dati da Firestore
-				console.log("created di home eseguito");
-			},
-			data: function() {
-				return {					
-					percorsi: [] // Inizializza l'array dei percorsi 
-				}
-			},
-			methods: {
-				scriviVoto: function() {
-					console.log("Invia i dati sul voto");
-				}
+	<head>
+		<title>App per turisti di Mannheim in visita a Rovereto</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width">
+		<!-- FONT PER MATERIAL CON ICONE -->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+		<!-- CSS DI MATERIAL CON TEMA DEFAULT -->
+		<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
+		<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+		<!-- VUE FRAMEWORK -->
+	    <script src="https://unpkg.com/vue"></script>
+	    <!-- VUE MATERIAL -->
+	    <script src="https://unpkg.com/vue-material@beta"></script>
+	    <!-- VUE ROUTER -->
+	    <script src="https://unpkg.com/vue-router"></script>
+		<style>
+			#app {
+				height: 100vh;
 			}
-			
-		}); 
+		</style>
+	</head>
 
-		const aereo = Vue.component('aereo', {template: '#aereo'});
-		const treno = Vue.component('treno', {template: '#treno'});
-		const auto = Vue.component('auto', {template: '#auto'});
-		const interestPoints = Vue.component('interestPoints', {template: '#interestPoints'});
+	<body>
+		<md-app id="app">
+			<md-app-toolbar class="md-primary">
+				<span class="md-title">Scelta dell'itinerario</span>
+			</md-app-toolbar>
+			<!-- Con una risoluzione da cellulare, il cassetto laterale sparisce perché md-permanent -->
+			<md-app-drawer md-permanent="full">			
+				<md-toolbar class="md-transparent" md-elevation="0">
+					<div class="md-toolbar-row">
+						<!-- il titolo è più grande -->
+						<span class="md-title">Rovereto Path Finder</span>
+					</div>
+	          		<div class="md-toolbar-row">
+						Visitare Rovereto da Mannheim
+					</div>
+	        	</md-toolbar>
+				<md-list>
+					<md-list-item>
+						<md-icon>directions_car</md-icon>
+						<span class="md-list-item-text">Auto</span>
+					</md-list-item>
+					<md-list-item>	
+						<md-icon>flight</md-icon>
+						<span class="md-list-item-text">Aereo</span>
+					</md-list-item>
+					<md-list-item>	
+						<md-icon>directions_train</md-icon>
+						<span class="md-list-item-text">Treno</span>
+					</md-list-item>
+					<md-divider class="md-inset"></md-divider>
+					<md-list-item>
+						<md-icon> </md-icon>
+						<span class="md-list-item-text">Cambio Lingua</span>					
+					</md-list-item>
+					<md-list-item>
+						<md-icon> </md-icon>
+						<span class="md-list-item-text">Aiuto e Feedback</span>					
+					</md-list-item>
+				</md-list>
+			</md-app-drawer>			
+			
+			<md-app-content>
+				<!-- Nei template non devo inserire md-app-content -->
+	        	<router-view></router-view> 
+	      	</md-app-content>
+		</md-app>	
 		
-//		const mappa = Vue.component('mappa', {template: '#mappa'});
+		
+		<script>
+			// Inizializzazione di Vue material con le funzionalità di router
+			Vue.use(VueMaterial.default);
+			Vue.use(VueRouter);
 	
-		const router = new VueRouter({
-			routes: [
-				{path:'/home', component: home},
-				// Metti un percorso su un singolo percorso, tipo {path: '/user/:id', component: User}, 
-				{path:'/aereo', component: aereo},
-				{path:'/treno', component: treno},
-				{path:'/auto', component: auto},
-				{path:'/interestPoints', component: auto},
-				{path:'*', component: home}
-			]			
-		})
+			// La home è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
+			const home = Vue.component('home', {
+				template: '#home',
+				// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
+				created: function() {					
+					this.percorsi = [{id: '55658b13e4b0025bfca70c32', qta:2, totale:10, commenti: ['bello','brutto'], titolo: "Bosco della città - Sentiero delle fiabe", titolo_immagine: "Sentiero delle fiabe", difficolta: 1, descrizione: "Il Bosco della Città si tinge dei colori della fantasia: sarà il simpatico scoiattolino Gellindo Ghiandedoro ad accompagnarvi alla scoperta dei misteri e dei tesori della città di Rovereto raccontati dalle fiabe di Mauro Neri. Potrete ascoltare i racconti direttamente dalla viva voce del loro Autore e – una volta a casa – scaricare i testi delle fiabe e delle schede di approfondimento per leggerli assieme ai vostri amici. Perché la vera magia del Bosco della Città è proprio questa:insegnare a vivere la vita in amicizia con tutti!", url_immagine: "http://i.imgur.com/cW6eeb2.jpg", punti_interesse: [{titolo: 'Mart', url_immagine:'http://www2.comune.rovereto.tn.it/servizionline/extra/media/servizionline/cityaudiotour/images/01-mart.jpg'}]},
+									 {id: '55658b13e4b0025bfca70c33', qta:3, totale:12, commenti: ['a','b'], titolo: "Scopri Rovereto", titolo_immagine: "Mart", difficolta: 3, descrizione: "Il Bosco della Città si tinge dei colori della fantasia: sarà il simpatico scoiattolino Gellindo Ghiandedoro ad accompagnarvi alla scoperta dei misteri e dei tesori della città di Rovereto raccontati dalle fiabe di Mauro Neri. Potrete ascoltare i racconti direttamente dalla viva voce del loro Autore e – una volta a casa – scaricare i testi delle fiabe e delle schede di approfondimento per leggerli assieme ai vostri amici. Perché la vera magia del Bosco della Città è proprio questa:insegnare a vivere la vita in amicizia con tutti!", url_immagine: "https://i2.wp.com/www.scheggemag.it/wp-content/uploads/2018/06/89961-Trentino-Area.jpg?fit=1200%2C675&resize=350%2C200", punti_interesse: [{titolo: 'Mart', url_immagine:'http://i.imgur.com/CwClqHJ.jpg'}] }];
+					// Leggi i dati da Firestore
+					console.log("created di home eseguito");
+				},
+				data: function() {
+					return {					
+						percorsi: [] // Inizializza l'array dei percorsi 
+					}
+				},
+				methods: {
+					scriviVoto: function() {
+						console.log("Invia i dati sul voto");
+					}
+				}				
+			}); 
+	
+			const aereo = Vue.component('aereo', {template: '#aereo'});
+			const treno = Vue.component('treno', {template: '#treno'});
+			const auto = Vue.component('auto', {template: '#auto'});
+			const interestPoints = Vue.component('interestPoints', {template: '#interestPoints'});
 		
-		window.addEventListener("load", function(event) {
-			new Vue({
-				router: router,
-				el:'#app',
-				data: {
-					
-				}
+			const router = new VueRouter({
+				routes: [
+					{path:'/home', component: home},
+					// Metti un percorso su un singolo percorso, tipo {path: '/user/:id', component: User}, 
+					{path:'/aereo', component: aereo},
+					{path:'/treno', component: treno},
+					{path:'/auto', component: auto},
+					{path:'/interestPoints', component: auto},
+					{path:'*', component: home}
+				]			
 			})
-		});
-	</script>
- 
-	<template id="home">
-		<div>
-			<div v-if="percorsi && percorsi.length > 0">
-				<md-app-content>
-					Qui ci va la griglia con i percorsi
-				</md-app-content>
-			</div>
+			
+			// Esegue new Vue solo dopo aver caricato tutto, così non da errori o warning su elementi non dichiarati
+			window.addEventListener("load", function(event) {
+				new Vue({
+					router: router,
+					el:'#app'
+				})
+			});
+		</script>
+	 
+		<template id="home">			
+			<span v-if="percorsi && percorsi.length > 0">
+				<div class="md-layout md-gutter">
+					<div v-for="percorso in percorsi" class="md-layout-item md-size-33 md-medium-size-50 md-xmall-size-100">
+						<md-card md-with-hover>
+							<md-ripple>
+								<md-card-header>
+									<div class="md-title">{{percorso.titolo_immagine}}</div>
+									<div class="md-subhead">Difficolt&agrave; {{percorso.difficolta}}</div>
+								</md-card-header>	
+								<md-card-media md-big md-ratio="1:1">
+										<img :src="percorso.url_immagine">
+								</md-card-media>
+								<md-card-content>{{percorso.titolo}}</md-card-content>	
+								<!--  Valutazione stelle -->
+								<md-button class="md-icon-button md-list-action">
+						          <md-icon class="md-primary">star</md-icon>
+						        </md-button>
+						
+						        <md-button class="md-icon-button md-list-action">
+						          <md-icon class="md-primary">star</md-icon>
+						        </md-button>
+						
+						        <md-button class="md-icon-button md-list-action">
+						          <md-icon class="md-primary">star</md-icon>
+						        </md-button>
+						
+						        <md-button class="md-icon-button md-list-action">
+						          <md-icon class="md-primary">star</md-icon>
+						        </md-button>
+						
+						        <!--stella vuota, solo contorno-->
+						        <md-button class="md-icon-button md-list-action">
+						          <md-icon>star_border</md-icon>
+						        </md-button>
+						        
+						        <!-- Espansione della card con i bottoni e il trigger per mostrare il testo lungo -->
+							    <md-card-expand>
+							        <md-card-actions md-alignment="space-between">
+							          <div>
+							            <md-button>Mappa</md-button>
+							            <md-button>Valutazione</md-button>
+							          </div>
+							
+							          <md-card-expand-trigger>
+							            <md-button class="md-icon-button">
+							              <md-icon>keyboard_arrow_down</md-icon>
+							            </md-button>
+							          </md-card-expand-trigger>
+							        </md-card-actions>
+
+						        	<md-card-expand-content>
+						          		<md-card-content>{{percorso.descrizione}}</md-card-content>
+						        	</md-card-expand-content>
+						      	</md-card-expand>
+								
+							</md-ripple>							
+						</md-card>
+					</div>
+				</div>		
+			</span>
 			<md-empty-state md-rounded md-label="Nessun percorso presente" 
 							md-description="Controlla se il server con i percorsi di Rovereto risponde"
-							v-if="!percorsi || percorsi.length == 0">
-				
+							v-else>
 			</md-empty-state>
-		</div>
-	</template>
-
+	
+		</template>
 	</body>
 </html>
