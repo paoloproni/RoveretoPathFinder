@@ -132,11 +132,13 @@
 									<div class="md-title">{{percorso.titolo_immagine}}</div>
 									<div class="md-subhead">Difficolt&agrave; {{percorso.difficolta}}</div>
 								</md-card-header>	
-								<md-card-media md-big md-ratio="1:1">
+								<md-card-media md-big>
 										<img :src="percorso.url_immagine">
 								</md-card-media>
 								<md-card-content>{{percorso.titolo}}</md-card-content>	
+								
 								<!--  Valutazione stelle -->
+								
 								<md-button class="md-icon-button md-list-action">
 						          <md-icon class="md-primary">star</md-icon>
 						        </md-button>
@@ -161,6 +163,9 @@
 						        <!-- Espansione della card con i bottoni e il trigger per mostrare il testo lungo -->
 							    <md-card-expand>
 							        <md-card-actions md-alignment="space-between">
+							        	
+							        	
+							        
 							          <div>
 							            <md-button>Mappa</md-button>
 							            <md-button>Valutazione</md-button>
