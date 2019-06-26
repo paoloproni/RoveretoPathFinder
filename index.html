@@ -23,6 +23,16 @@
 			#app {
 				height: 100vh;
 			}
+			
+  			.mobileShow {display: none;} 
+
+			  /* Smartphone Portrait and Landscape */ 
+			@media only screen 
+			    and (min-device-width : 320px) 
+			    and (max-device-width : 480px){ 
+			      .mobileShow {display: inline;}
+			}
+
 		</style>
 	</head>
 
@@ -71,6 +81,10 @@
 				methods: {
 					scriviVoto: function() {
 						console.log("Invia i dati sul voto");
+					},
+					isMobile: function() {
+						console.log(screen.width);
+						return screen.width <= 760;						
 					}
 				}				
 			}); 
@@ -94,7 +108,7 @@
 			
 			// Esegue new Vue solo dopo aver caricato tutto, così non da errori o warning su elementi non dichiarati
 			window.addEventListener("load", function(event) {
-				new Vue({
+				var vm = new Vue({
 					router: router,
 					el:'#app'
 				})
@@ -204,12 +218,15 @@
 			<!--  
 			Nella documentazione di Vue sta scritto chiaramente che un md-bottom-bar è ignorato da md-app, quindi lo mettiamo fuori.
 			Any other tag passed as a direct child of the md-app tag will be ignored. The component will only look for those three tags and choose the right placement for them
-			-->			
-			<md-bottom-bar md-sync-route >
+			-->	
+			
+			<md-bottom-bar md-sync-route v-show="$vuetify.breakpoint.xs">
 				<md-bottom-bar-item md-label="Auto" md-icon="directions_car"></md-bottom-bar-item>
 				<md-bottom-bar-item md-label="Aereo" md-icon="flight"></md-bottom-bar-item>
 				<md-bottom-bar-item md-label="Treno" md-icon="directions_train"></md-bottom-bar-item>
 			</md-bottom-bar>
+					
+			
 			</div>
 		</template>
 	</body>
