@@ -78,9 +78,22 @@
 			const home = Vue.component('home', {
 				template: '#home',
 				// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
-				created: function() {					
-					this.percorsi = [{id: '55658b13e4b0025bfca70c32', qta:2, totale:10, commenti: ['bello','brutto'], titolo: "Bosco della città - Sentiero delle fiabe", titolo_immagine: "Sentiero delle fiabe", difficolta: 1, descrizione: "Il Bosco della Città si tinge dei colori della fantasia: sarà il simpatico scoiattolino Gellindo Ghiandedoro ad accompagnarvi alla scoperta dei misteri e dei tesori della città di Rovereto raccontati dalle fiabe di Mauro Neri. Potrete ascoltare i racconti direttamente dalla viva voce del loro Autore e – una volta a casa – scaricare i testi delle fiabe e delle schede di approfondimento per leggerli assieme ai vostri amici. Perché la vera magia del Bosco della Città è proprio questa:insegnare a vivere la vita in amicizia con tutti!", url_immagine: "http://i.imgur.com/cW6eeb2.jpg", punti_interesse: [{titolo: 'Mart', url_immagine:'http://www2.comune.rovereto.tn.it/servizionline/extra/media/servizionline/cityaudiotour/images/01-mart.jpg'}]},
-									 {id: '55658b13e4b0025bfca70c33', qta:3, totale:12, commenti: ['a','b'], titolo: "Scopri Rovereto", titolo_immagine: "Mart", difficolta: 3, descrizione: "Il Bosco della Città si tinge dei colori della fantasia: sarà il simpatico scoiattolino Gellindo Ghiandedoro ad accompagnarvi alla scoperta dei misteri e dei tesori della città di Rovereto raccontati dalle fiabe di Mauro Neri. Potrete ascoltare i racconti direttamente dalla viva voce del loro Autore e – una volta a casa – scaricare i testi delle fiabe e delle schede di approfondimento per leggerli assieme ai vostri amici. Perché la vera magia del Bosco della Città è proprio questa:insegnare a vivere la vita in amicizia con tutti!", url_immagine: "https://i2.wp.com/www.scheggemag.it/wp-content/uploads/2018/06/89961-Trentino-Area.jpg?fit=1200%2C675&resize=350%2C200", punti_interesse: [{titolo: 'Mart', url_immagine:'http://i.imgur.com/CwClqHJ.jpg'}] }];
+				created: function() {
+					let qta_0 = 2;
+					let totale_0 = 10;
+					let media_calcolata_0 = totale_0 / qta_0;
+					
+					this.percorsi = [{id: '55658b13e4b0025bfca70c32', qta:2, totale:10, media:0, commenti: ['bello','brutto'], titolo: "Bosco della città - Sentiero delle fiabe", titolo_immagine: "Sentiero delle fiabe", difficolta: 1, descrizione: "Il Bosco della Città si tinge dei colori della fantasia: sarà il simpatico scoiattolino Gellindo Ghiandedoro ad accompagnarvi alla scoperta dei misteri e dei tesori della città di Rovereto raccontati dalle fiabe di Mauro Neri. Potrete ascoltare i racconti direttamente dalla viva voce del loro Autore e – una volta a casa – scaricare i testi delle fiabe e delle schede di approfondimento per leggerli assieme ai vostri amici. Perché la vera magia del Bosco della Città è proprio questa:insegnare a vivere la vita in amicizia con tutti!", url_immagine: "http://i.imgur.com/cW6eeb2.jpg", punti_interesse: [{titolo: 'Mart', url_immagine:'http://www2.comune.rovereto.tn.it/servizionline/extra/media/servizionline/cityaudiotour/images/01-mart.jpg'}]},
+									 {id: '55658b13e4b0025bfca70c33', qta:3, totale:5, media:0, commenti: ['a','b'], titolo: "Scopri Rovereto", titolo_immagine: "Mart", difficolta: 3, descrizione: "Il Bosco della Città si tinge dei colori della fantasia: sarà il simpatico scoiattolino Gellindo Ghiandedoro ad accompagnarvi alla scoperta dei misteri e dei tesori della città di Rovereto raccontati dalle fiabe di Mauro Neri. Potrete ascoltare i racconti direttamente dalla viva voce del loro Autore e – una volta a casa – scaricare i testi delle fiabe e delle schede di approfondimento per leggerli assieme ai vostri amici. Perché la vera magia del Bosco della Città è proprio questa:insegnare a vivere la vita in amicizia con tutti!", url_immagine: "https://i2.wp.com/www.scheggemag.it/wp-content/uploads/2018/06/89961-Trentino-Area.jpg?fit=1200%2C675&resize=350%2C200", punti_interesse: [{titolo: 'Mart', url_immagine:'http://i.imgur.com/CwClqHJ.jpg'}] }];
+					
+					this.percorsi[0].media=media_calcolata_0;
+					
+					
+					let qta_1 = 2;
+					let totale_1 = 10;
+					let media_calcolata_1 = totale_1 / qta_1;
+					this.percorsi[1].media=media_calcolata_1;
+					
 					// Leggi i dati da Firestore
 					console.log("created di home eseguito");
 				},
@@ -138,7 +151,9 @@
 								<md-card-content>{{percorso.titolo}}</md-card-content>	
 								
 								<!--  Valutazione stelle -->
-								
+								<!--
+								<md-icon v-for="i in percorso.media" v_bind:key="i"  class="md-primary">star</md-icon>
+								  -->
 								<md-button class="md-icon-button md-list-action">
 						          <md-icon class="md-primary">star</md-icon>
 						        </md-button>
@@ -164,8 +179,6 @@
 							    <md-card-expand>
 							        <md-card-actions md-alignment="space-between">
 							        	
-							        	
-							        
 							          <div>
 							            <md-button>Mappa</md-button>
 							            <md-button>Valutazione</md-button>
