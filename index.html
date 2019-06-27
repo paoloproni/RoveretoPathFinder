@@ -31,24 +31,75 @@
 				left: auto;
 				position: fixed;
 			}
-
+				  
 		</style>
 	</head>
 
 	<body>
-		<div id="app">		
-			<!-- Mostra il template, essendo per default quello con la scelta del percorso, mostrerà quello -->
-			<router-view/>
-	
-		</div> 
+		<div id="app">
+			<md-app> <!-- md-waterfall md-mode="fixed" sembra non sortire effetto, quindi metto la barra in basso con un css -->
+				<md-app-toolbar class="md-primary"> 
+					<span class="md-title">Visitare Rovereto da Mannheim</span>
+				</md-app-toolbar>
+				<!-- Con una risoluzione da cellulare, il cassetto laterale sparisce perché md-permanent -->
+				<md-app-drawer md-permanent="full">						
+					<md-toolbar class="md-transparent" md-elevation="0">
+						<div class="md-toolbar-row">
+							<!-- il titolo è più grande -->
+							<span class="md-title">Rovereto Path Finder</span>
+						</div>
+		          		<div class="md-toolbar-row">
+							Scegliere un'opzione
+						</div>
+		        	</md-toolbar>
+					<md-list>
+						<md-list-item to="/grigliaPercorsi">
+							<md-icon>nature_people</md-icon>
+							<span class="md-list-item-text">Percorsi</span>
+						</md-list-item>
+						<md-divider class="md-inset"></md-divider>
+						<md-list-item to="/auto">
+							<md-icon>directions_car</md-icon>
+							<span class="md-list-item-text">Auto</span>
+						</md-list-item>
+						<md-list-item to="/aereo">	
+							<md-icon>flight</md-icon>
+							<span class="md-list-item-text">Aereo</span>
+						</md-list-item>
+						<md-list-item to="/treno">	
+							<md-icon>directions_train</md-icon>
+							<span class="md-list-item-text">Treno</span>
+						</md-list-item>
+					</md-list>
+				</md-app-drawer>
+				<md-app-content>				
+					<router-view></router-view>	
+				</md-app-content> 
+			</md-app>
+			<!--  
+			Nella documentazione di Vue sta scritto chiaramente che un md-bottom-bar è ignorato da md-app, quindi lo mettiamo fuori.
+			Any other tag passed as a direct child of the md-app tag will be ignored. The component will only look for those three tags and choose the right placement for them
+			-->				
+			<md-bottom-bar md-sync-route v-show="$vuetify.breakpoint.xs" :md-active-item="primoLivelloAttivo">
+				<md-bottom-bar-item md-label="Percorsi" id="tagPercorsi" v-on:click="mostraPercorsi" md-icon="nature_people"></md-bottom-bar-item>
+				<md-bottom-bar-item md-label="Auto" id="tagAuto" v-on:click="mostraAuto" md-icon="directions_car"></md-bottom-bar-item>
+				<md-bottom-bar-item md-label="Aereo" id="tagAereo" v-on:click="mostraAereo" md-icon="flight"></md-bottom-bar-item>
+				<md-bottom-bar-item md-label="Treno" id="tagTreno" v-on:click="mostraTreno" md-icon="directions_train"></md-bottom-bar-item>
+			</md-bottom-bar>
+		</div>
+		
+		 
 		<script>
 			// Inizializzazione di Vue material con le funzionalità di router
 			Vue.use(VueMaterial.default);
 			Vue.use(VueRouter);
+			
+			Vue.component('router-link', Vue.options.components.RouterLink);
+			Vue.component('router-view', Vue.options.components.RouterView);
 	
-			// La home è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
-			const home = Vue.component('home', {
-				template: '#home',
+			// La grigliaPercorsi è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
+			const grigliaPercorsi = Vue.component('grigliaPercorsi', {
+				template: '#grigliaPercorsi',
 				// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
 				created: function() {
 					let qta_0 = 2;
@@ -74,14 +125,10 @@
 				},
 				data: function() {
 					return {					
-						percorsi: [] // Inizializza l'array dei percorsi 
+						percorsi: [] // Inizializza l'array dei percorsi 						
 					}
 				},
-				methods: {
-					scriviVoto: function() {
-						console.log("Invia i dati sul voto");
-					}
-				}				
+					
 			}); 
 	
 			const aereo = Vue.component('aereo', {template: '#aereo'});
@@ -91,13 +138,13 @@
 		
 			const router = new VueRouter({
 				routes: [
-					{path:'/home', component: home},
+					{path:'/grigliaPercorsi', component: grigliaPercorsi},
 					// Metti un percorso su un singolo percorso, tipo {path: '/user/:id', component: User}, 
 					{path:'/aereo', component: aereo},
 					{path:'/treno', component: treno},
 					{path:'/auto', component: auto},
 					{path:'/interestPoints', component: auto},
-					{path:'*', component: home}
+					{path:'*', component: grigliaPercorsi}
 				]			
 			})
 			
@@ -105,126 +152,114 @@
 			window.addEventListener("load", function(event) {
 				var vm = new Vue({
 					router: router,
-					el:'#app'
+					el:'#app',
+					data: function() {
+						return {
+							primoLivelloAttivo: "tagPercorsi"
+						}
+					},
+					methods: {
+						mostraPercorsi: function(event) {
+							console.log("percorsi");
+							router.push("/percorsi");
+						},
+						mostraAuto: function(event) {
+							console.log("auto");
+							router.push("/auto");
+						},
+						mostraAereo: function(event) {
+							console.log("aereo");
+							router.push("/aereo");
+						},
+						mostraTreno: function(event) {
+							console.log("treno");
+							router.push("/treno");
+						}
+					}			
 				})
 			});
 		</script>
-	 
-		<template id="home">
-			<div class="page-container">
-			<md-app md-waterfall md-mode="fixed">
-				<md-app-toolbar class="md-primary">
-					<span class="md-title">Scelta dell'itinerario</span>
-				</md-app-toolbar>
-				<!-- Con una risoluzione da cellulare, il cassetto laterale sparisce perché md-permanent -->
-				<md-app-drawer md-permanent="full">						
-					<md-toolbar class="md-transparent" md-elevation="0">
-						<div class="md-toolbar-row">
-							<!-- il titolo è più grande -->
-							<span class="md-title">Rovereto Path Finder</span>
-						</div>
-		          		<div class="md-toolbar-row">
-							Visitare Rovereto da Mannheim
-						</div>
-		        	</md-toolbar>
-					<md-list>
-						<md-list-item>
-							<md-icon>directions_car</md-icon>
-							<span class="md-list-item-text">Auto</span>
-						</md-list-item>
-						<md-list-item>	
-							<md-icon>flight</md-icon>
-							<span class="md-list-item-text">Aereo</span>
-						</md-list-item>
-						<md-list-item>	
-							<md-icon>directions_train</md-icon>
-							<span class="md-list-item-text">Treno</span>
-						</md-list-item>
-						<!-- 
-						<md-divider class="md-inset"></md-divider>
-						<md-list-item>
-							<md-icon> </md-icon>
-							<span class="md-list-item-text">Cambio Lingua</span>					
-						</md-list-item>
-						<md-list-item>
-							<md-icon> </md-icon>
-							<span class="md-list-item-text">Aiuto e Feedback</span>					
-						</md-list-item>
-						 -->
-					</md-list>
-				</md-app-drawer>
-				<md-app-content>
-					<div class="main-content">
-						<span v-if="percorsi && percorsi.length > 0">
-							<div class="md-layout md-gutter">
-								<!-- Il layout è responsive, il numero di colonne di card che mostra cambia con la dimensione -->
-								<div v-for="percorso in percorsi" class="md-layout-item md-size-33 md-medium-size-50 md-xsmall-size-100">
-									<md-card md-with-hover >
-										<md-ripple>
-											<md-card-header>
-												<div class="md-title">{{percorso.titolo_immagine}}</div>
-												<div class="md-subhead">Difficolt&agrave;: {{percorso.difficolta}}</div>
-											</md-card-header>	
-											<md-card-media md-big>
-												<img :src="percorso.url_immagine">
-											</md-card-media>
-											<md-card-content>
-												{{percorso.titolo}}
-												<v-rating readonly 
-													  v-model="percorso.media"
-													  background-color="orange lighten-3" 
-													  color="orange" medium/>
-											</md-card-content>	
-											
-													  		  
-									        <!-- Espansione della card con i bottoni e il trigger per mostrare il testo lungo -->
-										    <md-card-expand>
-										        <md-card-actions md-alignment="space-between">		
-											        <!-- Mostra le stelline per la valutazione ma non permette di modificarle per errore  -->								              	
-										          <div>
-										            <md-button>Mappa</md-button>
-										            <md-button>Valutazione</md-button>
-										          </div>
-										
-										          <md-card-expand-trigger>
-										            <md-button class="md-icon-button">
-										              <md-icon>keyboard_arrow_down</md-icon>
-										            </md-button>
-										          </md-card-expand-trigger>
-										        </md-card-actions>
-			
-									        	<md-card-expand-content>
-									          		<md-card-content>{{percorso.descrizione}}</md-card-content>
-									        	</md-card-expand-content>
-									      	</md-card-expand>
-											
-										</md-ripple>							
-									</md-card>
-								</div>
-							</div>	
-						</span>
-						<!-- Se non ha trovato percorsi, qualcosa è andato male con la ricezione dei dati dall'app,
-							 quindi mette un messaggio. La clausola v-else entra in questo blocco -->
-						<md-empty-state md-rounded md-label="Nessun percorso presente" 
-										md-description="Controlla se il server con i percorsi di Rovereto risponde"
-										v-else>
-						</md-empty-state>	
+		
+		<template id="grigliaPercorsi">
+			<div class="main-content">
+				<span v-if="percorsi && percorsi.length > 0">
+				<div class="md-layout md-gutter">
+					<!-- Il layout è responsive, il numero di colonne di card che mostra cambia con la dimensione -->
+					<div v-for="percorso in percorsi" class="md-layout-item md-size-33 md-medium-size-100 md-xsmall-size-100">
+						<!-- Mostra il template, essendo per default quello con la scelta del percorso, mostrerà quello -->																		
+						<md-card md-with-hover>
+							<md-ripple>
+								<md-card-header>
+									<div class="md-title">{{percorso.titolo_immagine}}</div>
+									<div class="md-subhead">Difficolt&agrave;: {{percorso.difficolta}}</div>
+								</md-card-header>	
+								<md-card-media md-medium>
+									<img :src="percorso.url_immagine">
+								</md-card-media>
+								<md-card-content>
+									{{percorso.titolo}} 
+									<v-rating readonly 
+										  v-model="percorso.media"
+										  background-color="orange lighten-3" 
+										  color="orange" medium/>
+									
+								</md-card-content>	
+								
+										  		  
+						        <!-- Espansione della card con i bottoni e il trigger per mostrare il testo lungo -->
+							    <md-card-expand>
+							        <md-card-actions md-alignment="space-between">		
+								      <!-- Mostra le stelline per la valutazione ma non permette di modificarle per errore  -->								              	
+							          <div class="md-button-group">
+							            <md-button>Mappa</md-button>
+							            <md-button>Valutazione</md-button>
+							          </div>
+							
+							          <md-card-expand-trigger>
+							            <md-button class="md-icon-button">
+							              <md-icon>keyboard_arrow_down</md-icon>
+							            </md-button>
+							          </md-card-expand-trigger>
+							        </md-card-actions>
+	
+						        	<md-card-expand-content>
+						          		<md-card-content>{{percorso.descrizione}}</md-card-content>
+						        	</md-card-expand-content>
+						      	</md-card-expand>
+								
+							</md-ripple>							
+						</md-card>
 					</div>
-		        </md-app-content>
-			</md-app>
-			<!--  
-			Nella documentazione di Vue sta scritto chiaramente che un md-bottom-bar è ignorato da md-app, quindi lo mettiamo fuori.
-			Any other tag passed as a direct child of the md-app tag will be ignored. The component will only look for those three tags and choose the right placement for them
-			-->	
-			
-			<md-bottom-bar md-sync-route v-show="$vuetify.breakpoint.xs">
-				<md-bottom-bar-item md-label="Auto" md-icon="directions_car"></md-bottom-bar-item>
-				<md-bottom-bar-item md-label="Aereo" md-icon="flight"></md-bottom-bar-item>
-				<md-bottom-bar-item md-label="Treno" md-icon="directions_train"></md-bottom-bar-item>
-			</md-bottom-bar>
-					
-			
+				</div>	
+				</span>
+				<!-- Se non ha trovato percorsi, qualcosa è andato male con la ricezione dei dati dall'app,
+					 quindi mette un messaggio. La clausola v-else entra in questo blocco -->
+				<md-empty-state md-rounded md-label="Nessun percorso presente" 
+								md-description="Controlla se il server con i percorsi di Rovereto risponde"
+								v-else>
+							
+				</md-empty-state>
+			</div>						
+		</template>
+		
+		<template id="aereo">
+			<div class="main-content">
+				Aereo
 			</div>
 		</template>
+		
+		<template id="treno">
+			<div class="main-content">
+				Treno
+			</div>
+		</template>
+		
+		<template id="auto">
+			<div class="main-content">
+				Auto
+			</div>
+		</template>
+		
+		
 	</body>
 </html>
