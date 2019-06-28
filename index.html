@@ -38,9 +38,19 @@
 	<body>
 		<div id="app">
 			<md-app> <!-- md-waterfall md-mode="fixed" sembra non sortire effetto, quindi metto la barra in basso con un css -->
-				<md-app-toolbar class="md-primary"> 
+				
+				<md-app-toolbar class="md-primary">					
+		            <md-button class="md-icon-button" v-on:click="tornaIndietro" 
+		            								  v-if="indietroVisibile" >
+		            								  
+		              <md-icon>keyboard_arrow_left</md-icon>
+		            </md-button>
+		            
+		            
 					<span class="md-title">Visitare Rovereto da Mannheim</span>
 				</md-app-toolbar>
+				
+				
 				<!-- Con una risoluzione da cellulare, il cassetto laterale sparisce perché md-permanent -->
 				<md-app-drawer md-permanent="full">						
 					<md-toolbar class="md-transparent" md-elevation="0">
@@ -79,9 +89,6 @@
 			<!--  
 			Nella documentazione di Vue sta scritto chiaramente che un md-bottom-bar è ignorato da md-app, quindi lo mettiamo fuori.
 			Any other tag passed as a direct child of the md-app tag will be ignored. The component will only look for those three tags and choose the right placement for them
-			
-			Forse per un problema con questa versione di Vue o per altre ragioni la cui indagine richiederebbe troppo tempo, non funziona
-			l'attributo 'to' sui md-bottom-bar-item, quindi chiamano delle funzioni che attivano la navigazione programmaticamente
 			-->				
 			<md-bottom-bar md-sync-route v-show="$vuetify.breakpoint.xs" :md-active-item="primoLivelloAttivo">
 				<md-bottom-bar-item md-label="Percorsi" id="tagPercorsi" v-on:click="mostraPercorsi" md-icon="nature_people"></md-bottom-bar-item>
@@ -99,13 +106,113 @@
 			
 			Vue.component('router-link', Vue.options.components.RouterLink);
 			Vue.component('router-view', Vue.options.components.RouterView);
+	/*		
+			var breakpoint = {
+					  data() {
+					    return {
+					      clientWidth: 0,
+					      clientHeight: 0,
+					    };
+					  },
+					  computed: {
+					    $breakpoint() {
+					      let xs = this.clientWidth < 600;
+					      let sm = this.clientWidth < 1024 && !xs;
+					      let md = this.clientWidth < (1440 - 16) && !(sm || xs);
+					      let lg = this.clientWidth < (1920 - 16) && !(md || sm || xs);
+					      let xl = this.clientWidth >= (1920 - 16) && !(lg || md || sm || xs);
+
+					      let xsOnly = xs;
+					      let smOnly = sm;
+					      let smAndDown = (xs || sm) && !(md || lg || xl);
+					      let smAndUp = !xs && (sm || md || lg || xl);
+					      let mdOnly = md;
+					      let mdAndDown = (xs || sm || md) && !(lg || xl);
+					      let mdAndUp = !(xs || sm) && (md || lg || xl);
+					      let lgOnly = lg;
+					      let lgAndDown = (xs || sm || md || lg) && !xl;
+					      let lgAndUp = !(xs || sm || md) && (lg || xl);
+					      let xlOnly = xl;
+
+					      let name;
+					      switch(true) {
+					        case (xs):
+					          name = 'xs';
+					          break;
+					        case (sm):
+					          name = 'sm';
+					          break;
+					        case (md):
+					          name = 'md';
+					          break;
+					        case (lg):
+					          name = 'lg';
+					          break;
+					        default:
+					          name = 'xl';
+					          break;
+					      }
+
+					      let result = {
+					        // Definite breakpoint.
+					        'xs': xs,
+					        'sm': sm,
+					        'md': md,
+					        'lg': lg,
+					        'xl': xl,
+
+					        // Useful e.g. to construct CSS class names dynamically.
+					        'name': name,
+
+					        // Breakpoint ranges.
+					        'xsOnly': xsOnly,
+					        'smOnly': smOnly,
+					        'smAndDown': smAndDown,
+					        'smAndUp': smAndUp,
+					        'mdOnly': mdOnly,
+					        'mdAndDown': mdAndDown,
+					        'mdAndUp': mdAndUp,
+					        'lgOnly': lgOnly,
+					        'lgAndDown': lgAndDown,
+					        'lgAndUp': lgAndUp,
+					        'xlOnly': xlOnly,
+
+					        // For custom breakpoint logic.
+					        'width': this.clientWidth,
+					        'height': this.clientHeight,
+					      };
+					      return result;
+					    },
+					  },
+					  methods: {
+					    _updateDimensions() {
+					      // Cross-browser support as described in:
+					      // https://stackoverflow.com/questions/1248081
+					      this.clientWidth = Math.max(document.documentElement.clientWidth,
+					                                  window.innerWidth || 0);
+					      this.clientHeight = Math.max(document.documentElement.clientHeight,
+					                                   window.innerHeight || 0);
+					    },
+					  },
+					  mounted() {
+					    this.$nextTick(() => {
+					      this._updateDimensions();
+					      window.addEventListener('resize', this._updateDimensions,
+					                              {'passive': true});
+					    });
+					  },
+					  destroyed() {
+					    window.removeEventListener('resize', this._updateDimensions);
+					  },
+					};
+	*/		
+			var primoLivelloAttivo = "tagPercorsi";
 			
 			/* 	Questo spazio di memoria è condiviso fra tutti i componenti, i dati sono caricati solo alla creazione
 				del componente che li mostra, quindi il momento più lento dunque è quello. */
 			
-			const percorsi = []; 
-						
-	
+			const percorsi = [];
+			
 			// La grigliaPercorsi è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
 			const grigliaPercorsi = Vue.component('grigliaPercorsi', {
 				template: '#grigliaPercorsi',
@@ -135,6 +242,17 @@
 					return {
 						 percorsi : percorsi
 					}
+				},
+				methods : {
+					apriVideataSecondaria : function(componente, id) {
+						const path = componente + id;
+						console.log(path);
+						router.push(path, function() { 
+							console.log("onSuccess sul router");
+							eventBus.$emit('mostraindietro');
+						});
+						
+					}
 				}
 			}); 
 	
@@ -159,7 +277,7 @@
 			const valutazione = Vue.component('valutazione', {
 												template: "#valutazione",
 												computed: {
-													percorso : function() {
+													percorso : function() { // this$.route è valorizzato dentro
 														return trovaPercorsoPerID( this.$route.params.id );																							
 													}
 												}
@@ -172,7 +290,9 @@
 													return trovaPercorsoPerID( this.$route.params.id );
 												}	
 											}
+											
 										});
+			
 		
 			const router = new VueRouter({
 				routes: [
@@ -183,21 +303,37 @@
 					{path:'/auto', component: auto},
 					{path:'/valutazione/:id', component: valutazione},
 					{path:'/mappa/:id', component: mappa},
+					
 					{path:'*', component: grigliaPercorsi}
 				]			
 			})
 			
+			var eventBus = new Vue();
+			
 			// Esegue new Vue solo dopo aver caricato tutto, così non da errori o warning su elementi non dichiarati
 			window.addEventListener("load", function(event) {
+				
 				var vm = new Vue({
 					router: router,
 					el:'#app',
 					data: function() {
 						return {
-							primoLivelloAttivo: "tagPercorsi"							
+							primoLivelloAttivo: "tagPercorsi",
+							indietroVisibile : false
 						}
 					},
+					created: function() {
+						eventBus.$on('mostraindietro', this.mostraBottoneIndietro.bind(this))
+					},
 					methods: {
+						mostraBottoneIndietro: function() {
+							console.log("dentro a onMostraBottoneIndietro")
+							this.indietroVisibile = true;	
+						},
+						tornaIndietro: function() {
+							this.indietroVisibile = false;
+							router.go(-1);
+						},						
 						mostraPercorsi: function(event) {
 							console.log("percorsi");
 							router.push("/percorsi");
@@ -216,6 +352,7 @@
 						}
 					}			
 				})
+		
 			});
 		</script>
 		
@@ -246,12 +383,18 @@
 								
 										  		  
 						        <!-- Espansione della card con i bottoni e il trigger per mostrare il testo lungo -->
-							    <md-card-expand>
-							        <md-card-actions md-alignment="space-between">		
+							    <md-card-expand @indietro="alert('preso in md-card-expand')">
+							        <md-card-actions md-alignment="space-between" @indietro="alert('preso in md-card-actions')">		
 								      <!-- Mostra le stelline per la valutazione ma non permette di modificarle per errore  -->								              	
-							          <div class="md-button-group">
-							            <md-button :to="'/mappa/' + percorso.id">Mappa</md-button>
-							            <md-button :to="'/valutazione/' + percorso.id">Valutazione</md-button>
+							          <div class="md-button-group" @indietro="alert('preso in div')">
+							          <!--
+							          <md-button @click="indietroVisibile = true" :to="'/mappa/' + percorso.id">Mappa</md-button>
+							          <md-button @click="indietroVisibile = true" :to="'/valutazione/' + percorso.id">Valutazione</md-button>							           
+							   		-->	
+							           
+							          <md-button @click="apriVideataSecondaria('/mappa/',percorso.id)">Mappa</md-button>
+							          <md-button @click="apriVideataSecondaria('/valutazione/', percorso.id)">Valutazione</md-button>							           
+							      
 							          </div>
 							
 							          <md-card-expand-trigger>
@@ -296,18 +439,24 @@
 		<template id="auto">
 			<div class="main-content">
 				Auto
+				
 			</div>
 		</template>
 		
 		<template id="valutazione">
 			<div class="main-content">
 				Valutazione per: {{ percorso.titolo }}
+				
+				
 			</div>
 		</template>		
 		
 		<template id="mappa">
 			<div class="main-content">
 				Mappa per: {{ percorso.titolo }}
+				
+						            
+				
 			</div>
 		</template>
 	</body>
