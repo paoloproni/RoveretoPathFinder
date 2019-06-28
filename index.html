@@ -79,6 +79,9 @@
 			<!--  
 			Nella documentazione di Vue sta scritto chiaramente che un md-bottom-bar è ignorato da md-app, quindi lo mettiamo fuori.
 			Any other tag passed as a direct child of the md-app tag will be ignored. The component will only look for those three tags and choose the right placement for them
+			
+			Forse per un problema con questa versione di Vue o per altre ragioni la cui indagine richiederebbe troppo tempo, non funziona
+			l'attributo 'to' sui md-bottom-bar-item, quindi chiamano delle funzioni che attivano la navigazione programmaticamente
 			-->				
 			<md-bottom-bar md-sync-route v-show="$vuetify.breakpoint.xs" :md-active-item="primoLivelloAttivo">
 				<md-bottom-bar-item md-label="Percorsi" id="tagPercorsi" v-on:click="mostraPercorsi" md-icon="nature_people"></md-bottom-bar-item>
@@ -138,7 +141,38 @@
 			const aereo = Vue.component('aereo', {template: '#aereo'});
 			const treno = Vue.component('treno', {template: '#treno'});
 			const auto = Vue.component('auto', {template: '#auto'});
-			const interestPoints = Vue.component('interestPoints', {template: '#interestPoints'});
+			
+			function trovaPercorsoPerID(id) {
+				console.log("ID del percorso cercato " + id);
+				const arrayTrovato = percorsi.filter(function (p) {
+										return p.id == id;
+									});
+				if (arrayTrovato.length == 0) {
+					console.log("La ricerca di un percorso per id non ne ha trovato nessuno, ma uno era atteso");
+					return {id: id, media: 0, titolo: "", commenti: []};
+				}
+				else // Ne ha trovato (almeno) uno, lo ritorna
+					return arrayTrovato[0];
+			}
+			
+			
+			const valutazione = Vue.component('valutazione', {
+												template: "#valutazione",
+												computed: {
+													percorso : function() {
+														return trovaPercorsoPerID( this.$route.params.id );																							
+													}
+												}
+											});
+			
+			const mappa = Vue.component('mappa', {
+											template: '#mappa',
+											computed: {
+												percorso : function() {
+													return trovaPercorsoPerID( this.$route.params.id );
+												}	
+											}
+										});
 		
 			const router = new VueRouter({
 				routes: [
@@ -147,7 +181,8 @@
 					{path:'/aereo', component: aereo},
 					{path:'/treno', component: treno},
 					{path:'/auto', component: auto},
-					{path:'/interestPoints', component: auto},
+					{path:'/valutazione/:id', component: valutazione},
+					{path:'/mappa/:id', component: mappa},
 					{path:'*', component: grigliaPercorsi}
 				]			
 			})
@@ -215,8 +250,8 @@
 							        <md-card-actions md-alignment="space-between">		
 								      <!-- Mostra le stelline per la valutazione ma non permette di modificarle per errore  -->								              	
 							          <div class="md-button-group">
-							            <md-button>Mappa</md-button>
-							            <md-button>Valutazione</md-button>
+							            <md-button :to="'/mappa/' + percorso.id">Mappa</md-button>
+							            <md-button :to="'/valutazione/' + percorso.id">Valutazione</md-button>
 							          </div>
 							
 							          <md-card-expand-trigger>
@@ -264,6 +299,16 @@
 			</div>
 		</template>
 		
+		<template id="valutazione">
+			<div class="main-content">
+				Valutazione per: {{ percorso.titolo }}
+			</div>
+		</template>		
 		
+		<template id="mappa">
+			<div class="main-content">
+				Mappa per: {{ percorso.titolo }}
+			</div>
+		</template>
 	</body>
 </html>
