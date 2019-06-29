@@ -45,8 +45,6 @@
 		            								  
 		              <md-icon>keyboard_arrow_left</md-icon>
 		            </md-button>
-		            
-		            
 					<span class="md-title">Visitare Rovereto da Mannheim</span>
 				</md-app-toolbar>
 				
@@ -106,106 +104,7 @@
 			
 			Vue.component('router-link', Vue.options.components.RouterLink);
 			Vue.component('router-view', Vue.options.components.RouterView);
-	/*		
-			var breakpoint = {
-					  data() {
-					    return {
-					      clientWidth: 0,
-					      clientHeight: 0,
-					    };
-					  },
-					  computed: {
-					    $breakpoint() {
-					      let xs = this.clientWidth < 600;
-					      let sm = this.clientWidth < 1024 && !xs;
-					      let md = this.clientWidth < (1440 - 16) && !(sm || xs);
-					      let lg = this.clientWidth < (1920 - 16) && !(md || sm || xs);
-					      let xl = this.clientWidth >= (1920 - 16) && !(lg || md || sm || xs);
-
-					      let xsOnly = xs;
-					      let smOnly = sm;
-					      let smAndDown = (xs || sm) && !(md || lg || xl);
-					      let smAndUp = !xs && (sm || md || lg || xl);
-					      let mdOnly = md;
-					      let mdAndDown = (xs || sm || md) && !(lg || xl);
-					      let mdAndUp = !(xs || sm) && (md || lg || xl);
-					      let lgOnly = lg;
-					      let lgAndDown = (xs || sm || md || lg) && !xl;
-					      let lgAndUp = !(xs || sm || md) && (lg || xl);
-					      let xlOnly = xl;
-
-					      let name;
-					      switch(true) {
-					        case (xs):
-					          name = 'xs';
-					          break;
-					        case (sm):
-					          name = 'sm';
-					          break;
-					        case (md):
-					          name = 'md';
-					          break;
-					        case (lg):
-					          name = 'lg';
-					          break;
-					        default:
-					          name = 'xl';
-					          break;
-					      }
-
-					      let result = {
-					        // Definite breakpoint.
-					        'xs': xs,
-					        'sm': sm,
-					        'md': md,
-					        'lg': lg,
-					        'xl': xl,
-
-					        // Useful e.g. to construct CSS class names dynamically.
-					        'name': name,
-
-					        // Breakpoint ranges.
-					        'xsOnly': xsOnly,
-					        'smOnly': smOnly,
-					        'smAndDown': smAndDown,
-					        'smAndUp': smAndUp,
-					        'mdOnly': mdOnly,
-					        'mdAndDown': mdAndDown,
-					        'mdAndUp': mdAndUp,
-					        'lgOnly': lgOnly,
-					        'lgAndDown': lgAndDown,
-					        'lgAndUp': lgAndUp,
-					        'xlOnly': xlOnly,
-
-					        // For custom breakpoint logic.
-					        'width': this.clientWidth,
-					        'height': this.clientHeight,
-					      };
-					      return result;
-					    },
-					  },
-					  methods: {
-					    _updateDimensions() {
-					      // Cross-browser support as described in:
-					      // https://stackoverflow.com/questions/1248081
-					      this.clientWidth = Math.max(document.documentElement.clientWidth,
-					                                  window.innerWidth || 0);
-					      this.clientHeight = Math.max(document.documentElement.clientHeight,
-					                                   window.innerHeight || 0);
-					    },
-					  },
-					  mounted() {
-					    this.$nextTick(() => {
-					      this._updateDimensions();
-					      window.addEventListener('resize', this._updateDimensions,
-					                              {'passive': true});
-					    });
-					  },
-					  destroyed() {
-					    window.removeEventListener('resize', this._updateDimensions);
-					  },
-					};
-	*/		
+	
 			var primoLivelloAttivo = "tagPercorsi";
 			
 			/* 	Questo spazio di memoria è condiviso fra tutti i componenti, i dati sono caricati solo alla creazione
@@ -217,7 +116,7 @@
 			const grigliaPercorsi = Vue.component('grigliaPercorsi', {
 				template: '#grigliaPercorsi',
 				// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
-				created: function() {
+				mounted: function() {
 					let qta_0 = 2;
 					let totale_0 = 8;
 					let media_calcolata_0 = totale_0 / qta_0;
@@ -238,6 +137,9 @@
 					// Leggi i dati da Firestore
 					console.log("created di home eseguito");										
 				},
+				created: function() {
+					eventBus.$emit('togliindietro');
+				},
 				data : function() {
 					return {
 						 percorsi : percorsi
@@ -256,9 +158,24 @@
 				}
 			}); 
 	
-			const aereo = Vue.component('aereo', {template: '#aereo'});
-			const treno = Vue.component('treno', {template: '#treno'});
-			const auto = Vue.component('auto', {template: '#auto'});
+			const aereo = Vue.component('aereo', {
+													 template: '#aereo',
+													 created : function() {
+														eventBus.$emit('mostraindietro');	
+													 }
+									    		 });
+			const treno = Vue.component('treno', {
+													template: '#treno',
+													created : function() {
+														eventBus.$emit('mostraindietro');	
+													}
+												});
+			const auto = Vue.component('auto', {
+													template: '#auto',
+													created : function() {
+														eventBus.$emit('mostraindietro');	
+													}				
+												});
 			
 			function trovaPercorsoPerID(id) {
 				console.log("ID del percorso cercato " + id);
@@ -280,19 +197,43 @@
 													percorso : function() { // this$.route è valorizzato dentro
 														return trovaPercorsoPerID( this.$route.params.id );																							
 													}
-												}
+												},
+												created : function() {
+													eventBus.$emit('mostraindietro');	
+												}	
 											});
 			
 			const mappa = Vue.component('mappa', {
 											template: '#mappa',
+											methods: {
+												mostrafoto: function(ind) {
+													console.log('Devo mostrare la foto: ' + ind);
+													eventBus.$emit('mostraindietro');
+													router.push({ name: 'foto', params: {indirizzo: ind}});
+												}
+											},
+											created : function() {
+												eventBus.$emit('mostraindietro');	
+											},	
 											computed: {
 												percorso : function() {
 													return trovaPercorsoPerID( this.$route.params.id );
 												}	
 											}
-											
 										});
 			
+			/* Mostra la foto in grande dei punti di interesse. Trattandosi di belle foto e non
+			   di disegni, anziché mostrarle in delle card, permettiamo di vedere un avatar in
+			   un lista, poi di ingrandirla */ 
+			const foto = Vue.component('foto', {
+											template: '#foto',
+											props: {
+												indirizzo: String // URL della foto da mostrare
+											},
+											created : function() {
+												eventBus.$emit('mostraindietro');	
+											}											
+										})	
 		
 			const router = new VueRouter({
 				routes: [
@@ -303,7 +244,7 @@
 					{path:'/auto', component: auto},
 					{path:'/valutazione/:id', component: valutazione},
 					{path:'/mappa/:id', component: mappa},
-					
+					{path:'/foto/:indirizzo', name: 'foto', component: foto, props: true},
 					{path:'*', component: grigliaPercorsi}
 				]			
 			})
@@ -323,15 +264,21 @@
 						}
 					},
 					created: function() {
-						eventBus.$on('mostraindietro', this.mostraBottoneIndietro.bind(this))
+						eventBus.$on('mostraindietro', this.mostraBottoneIndietro.bind(this));
+						eventBus.$on('togliindietro', this.togliBottoneIndietro.bind(this));
+						
 					},
 					methods: {
 						mostraBottoneIndietro: function() {
-							console.log("dentro a onMostraBottoneIndietro")
+							console.log("dentro a mostraBottoneIndietro")
 							this.indietroVisibile = true;	
 						},
+						togliBottoneIndietro: function() {
+							console.log("dentro a togliBottoneIndietro")
+							this.indietroVisibile = false;	
+						},
 						tornaIndietro: function() {
-							this.indietroVisibile = false;
+							// Non deve togliere sempre il bottone indietro, perché potrebbe essere arrivato al primo livello
 							router.go(-1);
 						},						
 						mostraPercorsi: function(event) {
@@ -383,19 +330,13 @@
 								
 										  		  
 						        <!-- Espansione della card con i bottoni e il trigger per mostrare il testo lungo -->
-							    <md-card-expand @indietro="alert('preso in md-card-expand')">
-							        <md-card-actions md-alignment="space-between" @indietro="alert('preso in md-card-actions')">		
+							    <md-card-expand>
+							        <md-card-actions md-alignment="space-between">		
 								      <!-- Mostra le stelline per la valutazione ma non permette di modificarle per errore  -->								              	
-							          <div class="md-button-group" @indietro="alert('preso in div')">
-							          <!--
-							          <md-button @click="indietroVisibile = true" :to="'/mappa/' + percorso.id">Mappa</md-button>
-							          <md-button @click="indietroVisibile = true" :to="'/valutazione/' + percorso.id">Valutazione</md-button>							           
-							   		-->	
-							           
-							          <md-button @click="apriVideataSecondaria('/mappa/',percorso.id)">Mappa</md-button>
-							          <md-button @click="apriVideataSecondaria('/valutazione/', percorso.id)">Valutazione</md-button>							           
-							      
-							          </div>
+							          <div class="md-button-group">
+							          	<md-button @click="apriVideataSecondaria('/mappa/',percorso.id)">Mappa</md-button>
+							          	<md-button @click="apriVideataSecondaria('/valutazione/', percorso.id)">Valutazione</md-button>							           
+							      	  </div>
 							
 							          <md-card-expand-trigger>
 							            <md-button class="md-icon-button">
@@ -425,22 +366,98 @@
 		</template>
 		
 		<template id="aereo">
-			<div class="main-content">
-				Aereo
-			</div>
+			<div class="card-expansion">
+			    <md-card>
+			      <md-card-media>
+			        <img src="http://i64.tinypic.com/2yuhpcl.jpg" alt="People">
+			      </md-card-media>
+			
+			      <md-card-header>
+			        <div class="md-title">Viaggio in aereo</div>
+			        <div class="md-subhead">Indicazioni</div>
+			      </md-card-header>
+			
+			      <md-card-expand>
+			        <md-card-actions md-alignment="space-between">
+			          <md-card-expand-trigger>
+			            <md-button class="md-raised">Per saperne di pi&ugrave;</md-button>
+			          </md-card-expand-trigger>
+			        </md-card-actions>
+			
+			        <md-card-expand-content>
+			          <md-card-content>
+			          L'aeroporto più vicino a Rovereto è quello di Verona, da Mannheim quindi la tratta aerea consigliata è un volo diretto da Francoforte a Verona (FRA - VRN) della durata di 1h e 10 min con la compagnia Air Dolomiti.
+			          Da Mannheim è possibile raggiungere l'aeroporto di Francoforte in 30 min di treno.
+			          Dall'aeroporto di Verona in 15 min di autobus si arriva alla stazione dei treni e con 1 h 4 min di treno si giunge a destinazione a Rovereto.
+			            </md-card-content>
+			        </md-card-expand-content>
+			      </md-card-expand>
+			    </md-card>
+			  </div>
 		</template>
 		
 		<template id="treno">
-			<div class="main-content">
-				Treno
-			</div>
+			<div class="card-expansion"> 
+			    <md-card>
+			      <md-card-media>
+			        <img src="http://i63.tinypic.com/1ftxxj.jpg" alt="People">
+			      </md-card-media>
+			
+			      <md-card-header>
+			        <div class="md-title">Viaggio in treno</div>
+			        <div class="md-subhead">Indicazioni</div>
+			      </md-card-header>
+			
+			      <md-card-expand>
+			        <md-card-actions md-alignment="space-between">
+			          <md-card-expand-trigger>
+			            <md-button class="md-raised">Per saperne di pi&ugrave;</md-button>
+			          </md-card-expand-trigger>
+			        </md-card-actions>
+			
+			        <md-card-expand-content>
+			          <md-card-content>
+			          E' possibile giungere a Rovereto da Mannheim tramite il treno con la Deutsche Bahn (DB).
+			          Partendo dalla stazione di Mannheim (Mannheim Hbf) in 3 ore si arriva in stazione a Monaco di Baviera (München Hbf). Qui si prende la coincidenza e in 4 h e 40 min si giunge a destinazione a Rovereto.
+			          In base all'orario di partenza varia il tempo di attesa per la coincidenza (da pochi minuti a un'ora e mezza) e in certi casi è necessario fare un secondo cambio.
+			        </md-card-content>
+			        </md-card-expand-content>
+			      </md-card-expand>
+			    </md-card>
+			  </div>
 		</template>
 		
 		<template id="auto">
-			<div class="main-content">
-				Auto
-				
-			</div>
+			 <div class="card-expansion">
+ 
+		    <md-card>
+	
+		      <md-card-header>
+		        <div class="md-title">Viaggio in auto</div>
+		        <div class="md-subhead">Indicazioni</div>
+		      </md-card-header>
+				<!-- Chiama Google Maps ma scade, proviamo con Open Street Map -->
+		              <center><a href="https://www.google.com/maps/dir/?api=1&origin=Mannheim+Germania&destination=Rovereto+38068+TN&travelmode=driving">Clicca qui per aprire la mappa di google</a>
+				</center>
+		
+		      <md-card-expand>
+		        <md-card-actions md-alignment="space-between">
+		
+		          <md-card-expand-trigger>
+		            <md-button>Per saperne di pi&ugrave;</md-button>
+		          </md-card-expand-trigger>
+		        </md-card-actions>
+		
+		        <md-card-expand-content>
+		          <md-card-content>
+					         Per raggiungere Rovereto, in Trentino Alto Adige, da Mannheim in auto il percorso più breve attraversa l'Austria e prevede una durata di circa 7 ore per un totale di 640km.
+					Si percorrono le seguenti autostrade: A5, A8, A7, A12 e E45 prendendo poi l'uscita per Rovereto Nord. 
+					Se si desidera arrivare in centro a Rovereto si prosegue su Via Degll Alpini/Via Lagarina e infine si percorre Via Statale 12/SS12 in direzione di Piazza Antonio Rosmini.
+				  </md-card-content>
+		        </md-card-expand-content>
+		      </md-card-expand>
+		    </md-card>
+		  </div>
 		</template>
 		
 		<template id="valutazione">
@@ -451,12 +468,27 @@
 			</div>
 		</template>		
 		
-		<template id="mappa">
+		<template id="mappa">		
 			<div class="main-content">
 				Mappa per: {{ percorso.titolo }}
-				
-						            
-				
+				<md-list>					
+					<md-list-item v-for="(punto,index) in percorso.punti_interesse" 
+								  v-bind:key="index"
+								  @click="mostrafoto(punto.url_immagine)"
+								  >
+						<md-avatar>
+							<img :src="punto.url_immagine"/>
+						</md-avatar>
+						<span class="md-list-item-text">{{punto.titolo}}</span>
+					</md-list-item>
+				<md-list>
+			</div>
+		</template>
+		
+		<template id="foto">
+			<div class="md-layout md-alignment-top-center">
+				<!-- Non usiamo la md-card per non mandare le foto piccole a schermo intero -->	
+				<img :src="indirizzo"/>
 			</div>
 		</template>
 	</body>
