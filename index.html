@@ -346,7 +346,7 @@
 							        <md-card-actions md-alignment="space-between">		
 								      <!-- Mostra le stelline per la valutazione ma non permette di modificarle per errore  -->								              	
 							          <div class="md-button-group">
-							          	<md-button @click="apriVideataSecondaria('/mappa/',percorso.id)">Mappa</md-button>
+							          	<md-button @click="apriVideataSecondaria('/mappa/',percorso.id)">Punti</md-button>
 							          	<md-button @click="apriVideataSecondaria('/valutazione/', percorso.id)">Valutazione</md-button>							           
 							      	  </div>
 							
@@ -490,7 +490,7 @@
             						</div>
             						
 									<md-field>
-								      <label>Aggiungi un commento per questo percorso</label>
+								      <label>Aggiungi un commento</label>
 								      <md-textarea v-model="nuovocommento" md-autogrow></md-textarea>
 								    </md-field>
 					
@@ -503,11 +503,14 @@
         				<md-card-expand>
 					        <md-card-actions md-alignment="space-between">
           						<md-button 	type="submit" @click.prevent="inviavoto(percorso.id, percorso.media)"
-          									class="md-primary">INVIA LA VALUTAZIONE</md-button>
+          									class="md-primary">INVIA VALUTAZIONE</md-button>
         							
+
 					          	<md-card-expand-trigger>
-					            	<md-button class="md-raised">VEDI COMMENTI PRECEDENTI</md-button>
-					          	</md-card-expand-trigger>
+						            <md-button class="md-icon-button">
+						              <md-icon>keyboard_arrow_down</md-icon>
+						            </md-button>
+						        </md-card-expand-trigger>
 					        </md-card-actions>
 					
 					        <md-card-expand-content>
