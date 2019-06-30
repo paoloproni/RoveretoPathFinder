@@ -18,12 +18,17 @@
 	    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet"/>
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   		<script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
-	    
+	    <!-- AXIOS PER CHIAMATE AD API REST -->
+    	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    	<!-- INTEGRAZIONE CON FIREBASE -->
+    	<script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
+    	
 		<style>
 			#app {
 				height: 100vh;
 			}
 			
+			/** Mantiene la barra di navigazione in basso alla finestra e sempre visibile */
   			.md-bottom-bar {
 				top: auto;
 				right: auto;
@@ -31,8 +36,22 @@
 				left: auto;
 				position: fixed;
 			}
-				  
 		</style>
+		
+		<script>
+		  // Inizializzazione
+		  var firebaseConfig = {
+		    apiKey: "AIzaSyBa9KyfZUw8slPjptU4WB-fbduWtZ8vgYQ",
+		    authDomain: "rovereto-path.firebaseapp.com",
+		    databaseURL: "https://rovereto-path.firebaseio.com",
+		    projectId: "rovereto-path",
+		    storageBucket: "rovereto-path.appspot.com",
+		    messagingSenderId: "575035054902",
+		    appId: "1:575035054902:web:2c64132a3e2e3858"
+		  };
+		  firebase.initializeApp(firebaseConfig);
+		  let db = firebase.firestore();
+		</script>
 	</head>
 
 	<body>
@@ -115,8 +134,112 @@
 			// La grigliaPercorsi è la schermata con le cards (foto, nome, stelline, bottoni) sui percorsi
 			const grigliaPercorsi = Vue.component('grigliaPercorsi', {
 				template: '#grigliaPercorsi',
-				// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene creato
+				// LIFE CYCLE HOOK - chiamato automaticamente quando il componente viene montato
 				mounted: function() {
+					// Scarica tutta la collection con le valutazioni da Firebase
+					
+					// voti è l'elenco dei nodi che arrivano da Firebase					
+					let voti = db.collection("valutazioni");
+					// arrayVoti è un array di comodo, che contiene le valutazioni ed è scansionata poi per cercare il voto corrispondente al percorso
+					const arrayVoti = [];
+					voti.get().then(function(res) {
+						console.log("Valutazioni lette da Firebase");
+					    res.forEach(function(r) {
+					    	// costanti di comodo, utili per i messaggi di debug e per la valorizzazione di arrayVoti
+					    	const id = r.id;
+					    	const data = r.data();
+					    	// Accoda l'elemento letto all'array di comodo
+					    	arrayVoti.push({id: id, data: data});
+					    	
+					      	console.log("id: " + id);
+					      	console.log("data: " + JSON.stringify(data));					      
+					    });
+					});
+					// Scarica l'elenco completo dei percorsi da un'API
+					axios.get('https://os.smartcommunitylab.it/percorsi/paths/ComuneRovereto').then(function(response) {
+						console.log("Dentro alla lettura dei dati dalla API");
+						var list = response.data.data;
+						// Ciascun elemento della lista ritornata, si accoda all'array percorsi
+						console.log("Elenco degli id ottenuti dall'API:")
+						list.forEach(function(obj) { // Per ciascun elemento dell'array data
+							
+							const id = obj.id;
+							const titolo = obj.title.it; // Gli utenti dovrebbero essere di Mannheim...
+							const immagini = obj.images;
+							let url_immagine = '';
+							if (immagini.length > 0) {								
+								immagine = immagini[0];
+								url_immagine = immagine.url;
+							}							
+							
+							let difficolta = '';
+							switch (obj.difficulty) {
+							case 1:
+								difficolta = 'Facile';
+								break;
+							case 2:
+								difficolta = 'Medio';
+								break;
+							case 3:
+								difficolta = "Difficile";
+								break;
+							default:
+								difficolta = "Non nota";
+							}
+							
+							const descrizione = obj.description.de;
+							
+							// Carica i punti di interesse
+							const pois = obj.pois;
+							const punti_interesse = [];
+																			
+							for (var i = 0; i < pois.length; i++) { 
+								const punto = pois[i];
+								for (var j = 0; j < punto.images; j++) { // pois.images
+									const pois_images = punto.images[j];
+									punti_interesse.push({titolo: pois_images[j].title.de , url_immagine: pois_images[j].url});
+								};
+							};
+							
+							let p = ({	id: id, 
+										qta: null, 
+										totale: null, 
+										media: null, 
+										commenti: [],
+										titolo: titolo, 
+										url_immagine: url_immagine,
+										difficolta: difficolta,
+										descrizione: descrizione,
+										punti_interesse: punti_interesse										
+									});
+							
+							// Cerca tra i dati ottenuti da FireBase i voti per questo percorso
+							console.log("Dimensione dell'array dei voti, letto dal db: " + arrayVoti.length);
+							
+							let votiTrovati = arrayVoti.filter(function (votoDaFireBase) {
+								return votoDaFireBase.data.id == id;
+							});
+							
+							if (votiTrovati.length > 0) { // Se non è mai stato votato, non lo trova
+								let voto = votiTrovati[0].data;
+								console.log('Trovato un voto da assegnare per id: ' + id);
+								p.totale = voto.totale;
+								p.qta = voto.qta;
+								if (p.qta != 0)
+									p.media = p.totale / p.qta;
+								else
+									p.media = null;
+								p.commenti = voto.commenti;
+							}
+							
+							percorsi.push(p);
+							console.log(JSON.stringify(p));
+						});
+					});
+					
+					// percorsi.length = 0;
+					// Fondi i dati
+					/*
 					let qta_0 = 2;
 					let totale_0 = 8;
 					let media_calcolata_0 = totale_0 / qta_0;
@@ -134,8 +257,8 @@
 					percorsi[1].media=media_calcolata_1;
 					percorsi[1].difficolta = "Media";
 					console.log(media_calcolata_1);
-					// Leggi i dati da Firestore
-					console.log("created di home eseguito");										
+					*/
+					console.log("mounted di home eseguito");										
 				},
 				created: function() {
 					eventBus.$emit('togliindietro');
@@ -318,21 +441,20 @@
 		<template id="grigliaPercorsi">
 			<div class="main-content">
 				<span v-if="percorsi && percorsi.length > 0">
-				<div class="md-layout md-gutter">
+				<div class="md-layout md-gutter md-alignment-top-center">
 					<!-- Il layout è responsive, il numero di colonne di card che mostra cambia con la dimensione -->
 					<div v-for="percorso in percorsi" class="md-layout-item md-size-33 md-medium-size-100 md-xsmall-size-100">
 						<!-- Mostra il template, essendo per default quello con la scelta del percorso, mostrerà quello -->																		
 						<md-card md-with-hover>
 							<md-ripple>
 								<md-card-header>
-									<div class="md-title">{{percorso.titolo_immagine}}</div>
+									<div class="md-title">{{percorso.titolo}}</div>
 									<div class="md-subhead">Difficolt&agrave;: {{percorso.difficolta}}</div>
 								</md-card-header>	
 								<md-card-media md-medium>
-									<img :src="percorso.url_immagine">
+									<img :src="percorso.url_immagine" style="max-height:300px">
 								</md-card-media>
 								<md-card-content>
-									{{percorso.titolo}} 
 									<v-rating readonly 
 										  v-model="percorso.media"
 										  background-color="orange lighten-3" 
@@ -369,8 +491,8 @@
 				</span>
 				<!-- Se non ha trovato percorsi, qualcosa è andato male con la ricezione dei dati dall'app,
 					 quindi mette un messaggio. La clausola v-else entra in questo blocco -->
-				<md-empty-state md-rounded md-label="Nessun percorso presente" 
-								md-description="Controlla se il server con i percorsi di Rovereto risponde"
+				<md-empty-state md-rounded md-label="Un attimo di pazienza..." 
+								md-description="Se il sistema dovesse impiegare troppo tempo, controllare la connessione"
 								v-else>
 							
 				</md-empty-state>
