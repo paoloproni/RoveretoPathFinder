@@ -193,6 +193,18 @@
 			
 			const valutazione = Vue.component('valutazione', {
 												template: "#valutazione",
+												data: function() {
+													return {
+														nuovocommento : ''
+													}													
+												},
+												methods: {
+													inviavoto: function(id,voto) {
+														console.log('Invia voto ! Per id: ' + id +
+																	' voto: ' + voto +
+																	' nuovo commento: ' + this.nuovocommento);
+													}
+												},
 												computed: {
 													percorso : function() { // this$.route è valorizzato dentro
 														return trovaPercorsoPerID( this.$route.params.id );																							
@@ -462,20 +474,64 @@
 		
 		<template id="valutazione">
 			<div class="main-content">
-				Valutazione per: {{ percorso.titolo }}
-				
+				<form class="listForm" >
+					<md-card class="md-layout-item md-size-50 md-small-size-100">
+				        <md-card-header>
+				          <div class="md-title">Valutazione</div>
+				          <div class="md-subhead">{{percorso.titolo}}</div>
+				        </md-card-header>
+						<md-card-content>
+          					<div class="md-layout md-gutter">
+            					<div class="md-layout-item md-small-size-100">
+            						<div>
+            						<v-rating v-model="percorso.media"
+										  background-color="orange lighten-3" 
+										  color="orange" large/>
+            						</div>
+            						
+									<md-field>
+								      <label>Aggiungi un commento per questo percorso</label>
+								      <md-textarea v-model="nuovocommento" md-autogrow></md-textarea>
+								    </md-field>
+					
+								</div>
+							</div>
+						</md-card-content>
+						
+						
+        				
+        				<md-card-expand>
+					        <md-card-actions md-alignment="space-between">
+          						<md-button 	type="submit" @click.prevent="inviavoto(percorso.id, percorso.media)"
+          									class="md-primary">INVIA LA VALUTAZIONE</md-button>
+        							
+					          	<md-card-expand-trigger>
+					            	<md-button class="md-raised">VEDI COMMENTI PRECEDENTI</md-button>
+					          	</md-card-expand-trigger>
+					        </md-card-actions>
+					
+					        <md-card-expand-content>
+						        <md-card-content>
+					          		<ul>
+					          			<li v-for="commento in percorso.commenti">
+					          				{{commento}}
+					          			</li>
+					          		</ul>
+						        </md-card-content>
+					        </md-card-expand-content>
+					      </md-card-expand>	 
+					</md-card>
+				</form>	
 				
 			</div>
 		</template>		
 		
 		<template id="mappa">		
 			<div class="main-content">
-				Mappa per: {{ percorso.titolo }}
 				<md-list>					
 					<md-list-item v-for="(punto,index) in percorso.punti_interesse" 
 								  v-bind:key="index"
-								  @click="mostrafoto(punto.url_immagine)"
-								  >
+								  @click="mostrafoto(punto.url_immagine)">
 						<md-avatar>
 							<img :src="punto.url_immagine"/>
 						</md-avatar>
