@@ -192,15 +192,21 @@
 							// Carica i punti di interesse
 							const pois = obj.pois;
 							const punti_interesse = [];
-																			
-							for (var i = 0; i < pois.length; i++) { 
-								const punto = pois[i];
-								for (var j = 0; j < punto.images; j++) { // pois.images
-									const pois_images = punto.images[j];
-									punti_interesse.push({titolo: pois_images[j].title.de , url_immagine: pois_images[j].url});
-								};
-							};
 							
+							pois.forEach(function(punto) {
+								punto.images.forEach(function(image) {
+									// Evita i null che a volte ci sono nei titoli delle immagini
+									let titolo_img = image.title;
+									let titolo_img_de = '';
+									if (titolo_img == null)
+										titolo_img_de = pois.title;
+									else
+										titolo_img_de = image.title.de;
+									// Assegna il punto di interesse
+									punti_interesse.push({titolo: titolo_img_de, url_immagine: image.url});
+								});
+							});
+														
 							let p = ({	id: id, 
 										qta: null, 
 										totale: null, 
@@ -233,7 +239,7 @@
 							}
 							
 							percorsi.push(p);
-							console.log(JSON.stringify(p));
+							// console.log(JSON.stringify(p));
 						});
 					});
 					
